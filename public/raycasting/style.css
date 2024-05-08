@@ -1,0 +1,10 @@
+
+  canvas {
+    display: flexbox;
+    justify-content: center;
+    align-self: center;
+  }
+  
+  html{
+    background-color: bisque;
+  }
