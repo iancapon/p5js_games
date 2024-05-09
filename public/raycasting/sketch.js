@@ -1,19 +1,31 @@
 const PI = 3.14159
-let showMap = false
-let box = []
+const fov = PI / 3///field of view
+const bcount = 120// beam count
 const socket = io.connect("/raycasting")
+let mario;
+function preLoad(){
+      mario= loadImage("mario.png")
+}
+let showMap = false
+let box = []///////////////el mapa
+
 let clients = []
+let distances = []
+let npc = { x: 4 * 40, y: 4 * 40, text: "mario\n'npc'", mensaje: "" }
+clients.push(npc)
 
 let p = { /////MY DATA
       x: 240,
       y: 240,
       text: "client",
       id: 0,
-      mensaje:""
+      mensaje: ""
 }
+let heading = -PI / 2
 
 function setup() {
       createCanvas(1360, 700);
+      preLoad()
       rectMode(CENTER)
       fillBoxes()
       socket.on("conectado", (data) => {
@@ -21,25 +33,15 @@ function setup() {
       })
 }
 
-
-
-let heading = -PI / 2
-const fov = PI / 3///field of view
-const bcount = 120// beam count
-
-let sprite = { x: 4 * 40, y: 4 * 40, text: "😀 ♘ ♞" , mensaje:"texto de prueba     para personaje npc"}
-clients.push(sprite)
-
 function draw() {//p
+      heading %= (2 * 3.14159)
       p.text = document.getElementById("nombre").value
-      p.mensaje= document.getElementById("chat").value
+      p.mensaje = document.getElementById("chat").value
       background(192, 239, 255)
-      
-      stroke(220)
+      stroke(255)
       if (mouseY < 700) {
             keyManaging()
       }
-      heading %= (2 * 3.14159)
       const scale = 10000 * 3
       for (let i = 0; i < bcount; i++) {
             const dist = shootBeam(heading - fov / 2 + i * fov / bcount).dist
@@ -50,6 +52,7 @@ function draw() {//p
       }
       send()
       recv()
+      sortSpriteByDistance(clients)
       for (let i = 0; i < clients.length; i++) {
             showSprite(clients[i])
       }
@@ -87,6 +90,29 @@ function recv() {
       })
 }
 
+function sortSpriteByDistance(array) {
+      let dist = []
+      for (let i = 0; i < array.length; i++) {
+            dist.push(sqrt(pow(array[i].x - p.x, 2) + pow(array[i].y - p.y, 2)))
+      }
+
+      for (let i = 0; i < array.length - 1; i++) {
+            for (let j = 0; j > array.length - 1 - i; j++) {
+                if (dist[j] > dist[j + 1]) {
+                    // Swap elements
+                    let td = dist[j]
+                    let ta= array[j]
+
+                    dist[j] = dist[j + 1]
+                    array[j] = array[j + 1]
+
+                    dist[j + 1] = td
+                    array[j + 1] = ta
+                }
+            }
+        }
+}
+
 function showSprite(sprite) {
       const dx = p.x - sprite.x
       const dy = p.y - sprite.y
@@ -101,23 +127,28 @@ function showSprite(sprite) {
       if (shootBeam(sp.heading()).dist > dist) {
             fill(0)
             circle(pos, 770 / 2 - spriteHeight, spriteHeight)
-            rect(pos, spriteHeight * 1.1 + 770 / 2, spriteHeight * 2, spriteHeight * 3)
-            textSize(spriteHeight / 4)
             fill(255)
+            textSize(spriteHeight / 4)
             text(sprite.text, pos - spriteHeight / 2.7, spriteHeight / 20 + 770 / 2 - spriteHeight)
-            textSize(spriteHeight / 6)
-            text(addLineJump(sprite.mensaje), pos - spriteHeight / 1.1, spriteHeight / 20 + 770 / 2 - spriteHeight/6)
-            
+            image(mario,pos-spriteHeight,spriteHeight/4+770/2,spriteHeight*2,spriteHeight*3)
+            if(sprite.mensaje!=""){
+                  fill(0)
+                  rect(pos, spriteHeight * 0.2 + 770 / 2, spriteHeight * 2, spriteHeight )
+                  fill(255)
+                  textSize(spriteHeight / 6)
+                  text(addLineJump(sprite.mensaje), pos - spriteHeight / 1.1, spriteHeight / 20 + 770 / 2 - spriteHeight / 6)
+            }
+
       }
 
 }
 
-function addLineJump(text){
-     // let largo=text.length
-     text+=" "
-      for(let i=1; i<text.length+1;i++){
-            if((i)%20==0){
-                  text=text.slice(0,i-1)+"\n"+text.slice(i-1,text.length-1)
+function addLineJump(text) {
+      // let largo=text.length
+      text += " "
+      for (let i = 1; i < text.length + 1; i++) {
+            if ((i) % 20 == 0) {
+                  text = text.slice(0, i - 1) + "\n" + text.slice(i - 1, text.length - 1)
             }
       }
       return text
@@ -125,7 +156,7 @@ function addLineJump(text){
 
 let mouseSpeed = 0
 function keyManaging() {
-      if(!mouseIsPressed){
+      if (!mouseIsPressed) {
             mouseSpeed = pmouseX - mouseX
             heading += -0.05 * mouseSpeed / PI
       }
