@@ -1,10 +1,39 @@
 
-  canvas {
-    display: flexbox;
-    justify-content: center;
-    align-self: center;
-  }
-  
-  html{
-    background-color: bisque;
-  }
+
+canvas {
+  display: flexbox;
+  justify-content: center;
+  align-self: center;
+}
+
+html{
+  background-color: rgb(255, 227, 115);
+}
+
+body{
+  margin:5%;
+  margin-top: 2%;
+}
+
+ul{
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+h1 {
+  text-shadow: 2px 2px red;
+}
+
+h5 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+
+
+main{
+  display: grid;
+}
+.elemento{
+  border:2px solid;
+  margin:10px;
+  padding:50px;
+}

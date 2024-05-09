@@ -33,7 +33,8 @@ clients.push(sprite)
 function draw() {//p
       p.text = document.getElementById("nombre").value
       p.mensaje= document.getElementById("chat").value
-      background(0)
+      background(192, 239, 255)
+      
       stroke(220)
       if (mouseY < 700) {
             keyManaging()
@@ -126,7 +127,7 @@ let mouseSpeed = 0
 function keyManaging() {
       if(!mouseIsPressed){
             mouseSpeed = pmouseX - mouseX
-            heading += -0.1 * mouseSpeed / PI
+            heading += -0.05 * mouseSpeed / PI
       }
 
       const speed = 2
@@ -186,6 +187,7 @@ function fillBoxes() {///// llena el array de cajas (el terreno)
                   }
             }
       }
+      box[5 + 9 * 10] = { x: (5 + 1) * 40, y: (9 + 1) * 40, l: 40, check: false }
       box[2 + 2 * 10] = { x: (2 + 1) * 40, y: (2 + 1) * 40, l: 40, check: true }
 }
 

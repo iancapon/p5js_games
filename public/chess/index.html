@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajedrez</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+    <h1 style="text-align: left;">CHESS-ROOM</h1>
+    <nav style="text-align: right; display:grid;  grid-template-columns:repeat(3,auto);  ;margin-left: 60%;">
+        <a href="../chat">Ir al chatroom...</a>
+        <a href="../pong">Ir al pong...</a>
+        <a href="../raycasting/">Ir al raycasting...</a>
+    </nav>
+
+    <main>
+        <div class="elemento">
+            <canvas id="canvas" width="400" height="400"></canvas>
+            <h3 style="text-shadow: 1px 1px rgba(0, 255, 85, 0.856);" id="mi-equipo"></h3>
+            <h3 style="text-shadow: 1px 1px blue;" id="estado"></h3>
+            <h1 id="turno-de"> Turno de:</h1>
+            <h3 id="moves-left"></h3>
+        </div>
+
+        <div class="elemento">
+            <h3>Jugadas:</h3>
+            <h5 id="sheet"></h5>
+        </div>
+
+        <div class="elemento">
+            <h3>Chat: <textarea id="name-textarea" cols="15" rows="1">Elegir nombre:</textarea></h3><br>
+            <textarea id="chat-textarea" cols="30" rows="2"></textarea>
+            <button id="chat-button">send.</button>
+            <h5 id="chat-sheet"></h5>
+        </div>
+    </main>
+</body>
+<script type="module" src="assets/main.js"></script>
+
+</html>

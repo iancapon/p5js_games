@@ -1,17 +1,7 @@
-
-  canvas {
-    display: flexbox;
-    justify-content: center;
-    align-self: center;
-  }
-  
-  html{
-    background-color: rgb(255, 227, 115);
-  }
-
-  body{
+body{
     margin:5%;
     margin-top: 2%;
+    background-color: rgb(255, 227, 115);
 }
 
 ul{
@@ -27,9 +17,13 @@ h5 {
     font-family: "Lucida Console", "Courier New", monospace;
 }
 
-
+canvas{
+    background-color: black;
+}
 main{
     display: grid;
+    grid-template-columns: repeat(3, auto); /* Crea tres columnas del mismo tamaño */
+    gap:5px;/* Espacio entre los elementos */
 }
 .elemento{
     border:2px solid;
