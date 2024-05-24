@@ -10,11 +10,19 @@ const io = new Server(server)
 app.use(express.static(__dirname +"/public"))
 
 app.get("/chat", (req, res) => {
-    res.sendFile("/chat")//res.sendFile(path.join(__dirname, 'public','chat'))
+    res.sendFile("/chat")
 })
 
-app.get("/chess", (req, res) => {
-    res.sendFile("/chess")//res.sendFile(path.join(__dirname, 'public','chess'))
+app.get("/tree", (req, res) => {
+    res.sendFile("/tree")
+})
+
+app.get("/bool", (req, res) => {
+    res.sendFile("/bool")
+})
+
+app.get("/ajedrez", (req, res) => {
+    res.sendFile("/ajedrez")
 })
 
 app.get("/pong", (req, res) => {
@@ -24,22 +32,55 @@ app.get("/pong", (req, res) => {
 app.get("/raycasting", (req, res) => {
     res.sendFile("/raycasting")
 })
-
-app.get("/", (req, res) => {
-    res.redirect("/chess")
+app.get("/truco", (req, res) => {
+    res.sendFile("/truco")
 })
 
+app.get("/inicio", (req, res) => {
+    res.sendFile("/inicio")
+})
+app.get("/doom", (req, res) => {
+    res.redirect("/doom")
+})
+app.get("/", (req, res) => {
+    res.redirect("/inicio")
+})
+
+let rcArray=[]
 const rayCasting = io.of("/raycasting")
 rayCasting.on("connection", (socket) => {
     console.log("un nuevo cliente en el raycasting")
-    socket.emit("conectado", { id: socket.id })
+   // socket.emit("conectado", { id: socket.id })
+   socket.on("coneccion",(data)=>{
+        rcArray.push({soc:socket, id:data})
+        console.log("id:   "+data)
+
+   })
+   
 
     socket.on("clientData", (data) => {
         socket.broadcast.emit("clientData", data)
         //console.log(data)
+        for(let i=0; i< rcArray.length;i++){
+            if(rcArray[i].id==data.id){
+                rcArray[i].soc=socket
+                break
+            }
+        }
     })
+    
     socket.on("disconnect", () => {
-        socket.broadcast.emit("desconeccion", { id: socket.id })
+        for(let i=0; i< rcArray.length;i++){
+            if(rcArray[i].soc.id==socket.id){
+                //rcArray.splice(i,1)
+                let a=rcArray[i].id
+                rayCasting.emit("desconeccion", { id: a})
+                socket.disconnect()
+                rcArray.splice(i,1)
+                break
+            }
+        }
+        
         console.log("se fue un cliente")
     })
 })
@@ -48,7 +89,7 @@ const chess = io.of("/chess")
 let games = []
 chess.on("connection", (socket) => {
     games.push(socket)
-    //console.log(`Conectados: ${games.length}`)
+    console.log(`Conectados: ${games.length} jugadores`)
     if (games.length % 2 == 1) {
         socket.emit("control", "white")
         socket.emit("state", "waiting")

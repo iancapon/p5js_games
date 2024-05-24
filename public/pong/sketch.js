@@ -66,10 +66,15 @@ function collideWithPaddle(paddle) {
 }
 
   function movePaddle(paddle) {
-    if (keyIsPressed === true) {
-      if (keyCode === UP_ARROW) {
+    let dy=0
+    if (keyIsPressed === true || mouseIsPressed ===true) {
+      if(mouseIsPressed){
+        dy=mouseX- p2.y
+        console.log(`${p2.y} + ${mouseX}`)
+      }
+      if (keyCode === UP_ARROW || dy>0) {
         paddle.v = -5
-      } else if (keyCode === DOWN_ARROW) {
+      } else if (keyCode === DOWN_ARROW || dy<0) {
         paddle.v = 5
       }
     } else {

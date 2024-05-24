@@ -1,0 +1,31 @@
+body{
+    margin:5%;
+    margin-top: 2%;
+    background-color: rgb(255, 227, 115);
+}
+
+ul{
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+h1 {
+    text-shadow: 2px 2px red;
+  }
+
+h5 {
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+
+main{
+    display: flex; /* Utiliza flexbox para el diseño */
+    justify-content: center; /* Centra los elementos horizontalmente */
+    align-items: center; 
+}
+
+.elemento{
+    border:2px solid;
+    margin:10px;
+    padding:50px;
+}

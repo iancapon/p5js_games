@@ -3,8 +3,12 @@ const fov = PI / 3///field of view
 const bcount = 120// beam count
 const socket = io.connect("/raycasting")
 let mario;
+let myId;
 function preLoad(){
       mario= loadImage("mario.png")
+      myId=floor(random(255)*random(255))
+      console.log("myid: "+myId)
+      socket.emit("coneccion", myId)
 }
 let showMap = false
 let box = []///////////////el mapa
@@ -28,9 +32,10 @@ function setup() {
       preLoad()
       rectMode(CENTER)
       fillBoxes()
-      socket.on("conectado", (data) => {
+      /*socket.on("conectado", (data) => {
             p.id = data.id
-      })
+      })*/
+      p.id=myId
 }
 
 function draw() {//p

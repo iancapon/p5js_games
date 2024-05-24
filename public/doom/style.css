@@ -6,12 +6,12 @@
   }
   
   html{
-    background-color: rgb(255, 227, 115);
+    background-color: rgb(140, 71, 71);
   }
 
   body{
     margin:5%;
-    margin-top: 2%;
+    margin-top: 0%;
 }
 
 ul{
@@ -21,6 +21,7 @@ ul{
 
 h1 {
     text-shadow: 2px 2px red;
+    margin: 5px;
   }
 
 h5 {
@@ -28,13 +29,17 @@ h5 {
     text-align: left;
 }
 nav{
-  text-align: left;
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  text-align: center;
+  margin-top: 0;
+  background-color: rgb(255, 98, 0);
 }
-
+/*
 @media screen and (max-width: 768px) {
   .contenedor {
-    /*flex-direction: column;*/ /* Cambia la dirección del flexbox a columna en pantallas más pequeñas */
+    flex-direction: column; Cambia la dirección del flexbox a columna en pantallas más pequeñas 
     transform: rotate(90deg);
   }
   h1{
@@ -46,6 +51,7 @@ nav{
     margin-bottom: 20px;
   }
 }
+*/
 .elemento{
     border:2px solid;
     margin:10px;

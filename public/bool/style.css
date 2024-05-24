@@ -1,10 +1,50 @@
+.cuerpo {
+  display: flex;
+  justify-content: left;
+  border: solid 2px;
+  margin-left: 2vh;
+  margin-right: 2vh;
+  margin-top: 1vh;
+}
 
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  html{
-    background-color: rgb(21, 243, 187);
-  }
+body{
+  margin-left: 2vh;
+  margin-right: 2vh;
+}
+canvas {
+  margin: 1vh;
+}
+
+html {
+  background-color: rgb(255, 164, 114);
+}
+
+h1 {
+  text-shadow: 2px 2px red;
+  text-align: left;
+
+}
+
+.icon-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-size-adjust: 20px;
+  background-color: rgb(200, 200, 200);
+  border-radius: 10%;
+  margin: 5px;
+  padding: 1vh;
+  width: 60px;
+
+}
+
+.item:hover {
+  background-color: rgb(255, 242, 188);
+}

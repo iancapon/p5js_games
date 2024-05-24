@@ -1,142 +1,271 @@
-let levels
+let levels = []
+let switchList = []
+///////////////////////
+let cursor = 0
+let moving = false
+///////////////////////
+let parent = 0
+let plugging = false
+///////////////////////
+let sw_img_on//=loadImage("icons/switch_on.png")
+let sw_img_off
+let led_img_on
+let led_img_off
+let and_img
+let or_img
+let not_img
+
 function setup() {
-  createCanvas(800, 700);
+  createCanvas(1400, 650);
   rectMode(CENTER)
+  imageMode(CENTER)
   textAlign(CENTER, CENTER)
-  levels = []
-  let a = new nodo(100, 50, "a", "switch",true, 0, levels)
-  let b = new nodo(220, 50, "b", "switch",true, 0, levels)
-  let c = new nodo(220, 50, "c", "and",false, 1, levels)
-  let d = new nodo(220, 50, "d", "led",false, 2, levels)
-  c.addParent(a)
-  c.addParent(b)
-  d.addParent(c)
+  stroke(100)
+  sw_img_on = loadImage("icons/switch_on.png")
+  sw_img_off = loadImage("icons/switch_off.png")
+  led_img_on = loadImage("icons/led_on.png")
+  led_img_off = loadImage("icons/led_off.png")
+  and_img = loadImage("icons/and.png")
+  or_img = loadImage("icons/or.png")
+  not_img = loadImage("icons/not.png")
 }
 
 function draw() {
   background(220)
-  for (let i = 0; i < 7; i++) {
-    line(0, i * 100, 800, i * 100)
-  }
   showAll()
   for (let i = 0; i < levels.length; i++) {
-    for (let j = 0; j < levels[i].length; j++) {
-      let current = levels[i][j]
-      current.process()
-    }
+    let current = levels[i]
+    current.process()
+    moveNode(i)
   }
-
+  connectNodes()
+  detectSwitchChange()
+  detectAddNode()
 }
 
-function queryByName(name) {
-  let found = false
-  let current
-  for (let i = 0; i < levels.length && !found; i++) {
-    for (let j = 0; j < levels[i].length && !found; j++) {
-      current = levels[i][j]
-      if (current.text === name) {
-        found = true
+
+function addNode(type, x, y) {
+  levels.push(new nodo(x, y, type, false))
+  switch (type) {
+    case "switch":
+      document.getElementById("switch-list").innerHTML += '<input type="checkbox" id="switch' + switchList.length + '" name="switch' + switchList.length + '">'
+      document.getElementById("switch-list").innerHTML += '<label for="switch' + switchList.length + '">"switch ' + switchList.length + '"</label><br>'
+      switchList.push({ index: levels.length - 1, id: 'switch' + switchList.length })
+      levels[levels.length - 1].comment = 'sw' + (switchList.length - 1)
+      break
+  }
+}
+
+function detectSwitchChange() {
+  for (let i = 0; i < switchList.length; i++) {
+    const lever = document.getElementById(switchList[i].id)
+    lever.addEventListener("change", () => {
+      if (lever.checked) {
+        levels[switchList[i].index].value = true
       }
+      else {
+        levels[switchList[i].index].value = false
+      }
+    })
+
+
+  }
+}
+
+
+function moveNode(index) {
+  let node = levels[index]
+  let dist = sqrt(pow(mouseX - node.x, 2) + pow(mouseY - node.y, 2))
+  if (mouseIsPressed && mouseButton === LEFT && dist < 70) {
+    if (!moving) {
+      cursor = index
+      moving = true
+    }
+    if (moving && cursor == index) {
+      node.x = mouseX
+      node.y = mouseY
     }
   }
-  return { vertex: current, found: found }
+  if (!mouseIsPressed) {
+    moving = false
+  }
+}
+
+
+function connectNodes() {
+  for (let i = 0; i < levels.length; i++) {
+    let node1 = levels[i]
+    let dist1 = sqrt(pow(mouseX - node1.x, 2) + pow(mouseY - node1.y, 2))
+    if (mouseIsPressed && mouseButton === CENTER && dist1 < 70 / 2) {
+      if (!plugging) {
+        parent = i
+        plugging = true
+      }
+    }
+    if (plugging && parent == i) {
+      line(node1.x, node1.y, mouseX, mouseY)
+    }
+    if (!mouseIsPressed && plugging) {
+      for (let j = 0; j < levels.length; j++) {
+        let node2 = levels[j]
+        let dist2 = sqrt(pow(mouseX - node2.x, 2) + pow(mouseY - node2.y, 2))
+        if (j != parent && dist2 < 70 / 2 ) {
+          levels[parent].addChild(node2)
+          break
+        }
+      }
+      plugging = false
+    }
+  }
 }
 
 function showAll() {
+  noFill()
   for (let i = 0; i < levels.length; i++) {
-    for (let j = 0; j < levels[i].length; j++) {
-      let current = levels[i][j]
-      for (let k = 0; k < current.children.length; k++) {
-        let offspring = current.children[k]
-        line(current.x, current.y, offspring.x, offspring.y)
-      }
-      rect(current.x, current.y, 100, 50)
-      text(current.text, current.x, current.y - 15)
-      text("ope: " + current.operation, current.x, current.y - 5)
-      text("valor:" + current.value, current.x, current.y + 10)
+    let current = levels[i]
+    let numOfParents = current.parents.length
+    for (let j = 0; j < numOfParents; j++) {
+      let dad = current.parents[j]
+      let scale = 20
+      let offSet = (numOfParents - 1) * scale / 2
+      line(current.x - 70 / 2, current.y + scale * j - offSet, dad.x + 70 / 2, dad.y)
+      rect(current.x - 70 / 2, current.y + scale * j - offSet, 5, 5)
+      rect(dad.x + 70 / 2, dad.y, 5, 5)
+    }
+  }
+  for (let i = 0; i < levels.length; i++) {
+    let current = levels[i]
+    rect(current.x, current.y, 70, 70)
+    circle(current.x, current.y, 70)
+    //text("ope: " + current.operation, current.x, current.y - 5)
+    //text("valor:" + current.value, current.x, current.y + 10)
+    text(current.comment, current.x, current.y + 25)
+    switch (current.operation) {
+      case "switch":
+        if (current.value) {
+          image(sw_img_on, current.x, current.y)
+        } else {
+          image(sw_img_off, current.x, current.y)
+        }
+        break
+      case "led":
+        if (current.value) {
+          image(led_img_on, current.x, current.y)
+        } else {
+          image(led_img_off, current.x, current.y)
+        }
+        break
+      case "and":
+        image(and_img, current.x, current.y)
+        break
+      case "or":
+        image(or_img, current.x, current.y)
+        break
+      case "not":
+        image(not_img, current.x, current.y)
+        break
     }
   }
 }
-function levelInspect() {
-  for (let i = 0; i < levels.length; i++) {
-    let row = ""
-    for (let j = 0; j < levels[i].length; j++) {
-      row += "; " + levels[i][j].text + " hijo de: " + levels[i][j].getParent()
+
+let aux = true
+function detectAddNode() {
+  document.getElementById("add-switch").addEventListener("click", _ => {
+    if (aux) {
+      addNode("switch", 0.5, 0.5)
+      aux = false
+      setTimeout(() => { aux = true }, 20);
     }
-    console.log(row)
-  }
+  })
+  document.getElementById("add-led").addEventListener("click", _ => {
+    if (aux) {
+      addNode("led", 0.5, 0.5)
+      aux = false
+      setTimeout(() => { aux = true }, 20);
+    }
+  })
+  document.getElementById("add-and").addEventListener("click", _ => {
+    if (aux) {
+      addNode("and", 0.5, 0.5)
+      aux = false
+      setTimeout(() => { aux = true }, 20);
+    }
+  })
+  document.getElementById("add-or").addEventListener("click", _ => {
+    if (aux) {
+      addNode("or", 0.5, 0.5)
+      aux = false
+      setTimeout(() => { aux = true }, 20);
+    }
+  })
+  document.getElementById("add-not").addEventListener("click", _ => {
+    if (aux) {
+      addNode("not", 0.5, 0.5)
+      aux = false
+      setTimeout(() => { aux = true }, 20);
+    }
+  })
+
+  /*
+  const sw=document.getElementById("add-switch")
+  const and=document.getElementById("add-and")
+  const or=document.getElementById("add-or")
+  const led=document.getElementById("add-led")
+  const not=document.getElementById("add-not")
+  */
+
 }
+
+
 class nodo {
-  constructor(x, yOff, text, operation,value, generation, levels) {
+  constructor(x, y, operation, value) {
     this.value = value
     this.operation = operation
-    this.x = x
-    this.yOff = yOff
-    this.y = generation * 100 + yOff//Y OFFSET
-    this.text = text
+    this.x = 100 * x
+    this.y = 100 * y
     this.children = []
     this.parents = []
-    this.generation = generation
-    this.levels = levels
-    if (this.levels.length > this.generation) {
-      this.levels[this.generation].push(this)
-    }
-    if (this.levels.length <= this.generation) {
-      let newLevel = []
-      newLevel.push(this)
-      this.levels.push(newLevel)
-    }
+    this.comment = ""
   }
+
   process() {
-    if (this.operation == "led") {
-      this.value = this.parents[0].value
-    }
-    if (this.operation == "and") {
-      for (let i = 0; i < this.parents.length; i++) {
-        this.value == this.parents[0]
-        if (this.value == this.parents[i].value && this.value == true) {
-          this.value = true
-        } else {
-          this.value = false
+    switch (this.operation) {
+      case "led":
+        if (this.parents.length == 1) {
+          this.value = this.parents[0].value
         }
-      }
-      if (this.operation == "or") {
-        for (let i = 0; i < this.parents.length; i++) {
-          this.value == this.parents[0]
-          if (this.value == this.parents[i].value && this.value == false) {
-            this.value = false
+        break
+      case "and":
+        for (let i = 0; i < this.parents.length - 1 && this.parents.length >= 2; i++) {
+          if (this.parents[i].value == this.parents[i + 1].value && this.parents[i].value == true) {
+            this.value = true
           } else {
             this.value = false
           }
         }
-      }
+        break
+      case "or":
+        for (let i = 0; i < this.parents.length - 1 && this.parents.length >= 2; i++) {
+          if (this.parents[i].value == this.parents[i + 1].value && this.parents[i].value == false) {
+            this.value = false
+          } else {
+            this.value = true
+          }
+        }
+        break
+      case "not":
+        if (this.parents.length == 1) {
+          this.value = !this.parents[0].value
+        }
+        break
     }
-  }
-  showDown() {
-    for (let i = 0; i < this.children.length; i++) {
-      line(this.x, this.y, this.children[i].x, this.children[i].y)
-      this.children[i].showDown()
-    }
-    rect(this.x, this.y, 100, 50)
-    text(this.text, this.x, this.y - 15)
-    text("gen: " + this.generation, this.x, this.y - 5)
-    text("hijo de:" + this.getParent(), this.x, this.y + 10)
-  }
-  addChild(x, text, op) {
-    let son = new nodo(x, this.yOff, text, op, this.generation + 1, this.levels)
-    son.parents.push(this)
-    this.children.push(son)
   }
   addParent(parent) {
     parent.children.push(this)
     this.parents.push(parent)
   }
-  getParent() {
-    let name = ""
-    for (let i = 0; i < this.parents.length; i++) {
-      name += " " + this.parents[i].text
-    }
-    return name
+  addChild(child) {
+    child.parents.push(this)
+    this.children.push(child)
   }
-
 }
